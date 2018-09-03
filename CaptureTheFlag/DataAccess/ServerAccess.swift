@@ -26,9 +26,12 @@ class ServerAccess {
         }
     }
     
+    //capture-the-flag-server.herokuapp.com/
+    //192.168.86.63:8000
+    
     func initaiteConnection(username: String, password: String, callback: @escaping (GameError?) -> ()) {
         print("is logging in")
-        var request = URLRequest(url: URL(string: "http://10.26.1.88:8000/authenticate")!)
+        var request = URLRequest(url: URL(string: "https://capture-the-flag-server.herokuapp.com/authenticate")!)
         request.httpMethod = "POST"
         request.setValue("Application/json", forHTTPHeaderField: "Content-Type")
         let paramDictionary = ["username" : username, "password" : password]
@@ -45,7 +48,7 @@ class ServerAccess {
                 do {
                     let json = try JSONSerialization.jsonObject(with: data, options: []) as! [String : String]
                     self.userKey = json["key"]
-                    self.point.open(address: "ws://10.26.1.88:8000", additionalHTTPHeaders: ["authKey" : self.userKey!])
+                    self.point.open(address: "ws://capture-the-flag-server.herokuapp.com/", additionalHTTPHeaders: ["authKey" : self.userKey!])
                     DispatchQueue.main.async {
                         callback(nil)
                     }
@@ -269,8 +272,7 @@ class ServerAccess {
         
     }
     
-    //capture-the-flag-server.herokuapp.com/
-    //192.168.86.63:8000
+    
     
    
     

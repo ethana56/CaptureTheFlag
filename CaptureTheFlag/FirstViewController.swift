@@ -27,11 +27,11 @@ class FirstViewController: CaptureTheFlagViewController {
     }
     
     @IBAction func JoinGame(_ sender: Any) {
-        setUPWSRR()
+        
     }
     
     @IBAction func CreateGame(_ sender: Any) {
-        setUPWSRR()
+        
     }
     
     

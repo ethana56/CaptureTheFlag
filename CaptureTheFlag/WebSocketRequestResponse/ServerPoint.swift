@@ -11,6 +11,8 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
     private var reconnectKey: String? = nil
     public var onReconnect: (() -> ())?
     private var serverUrl: String?
+    private var httpHeaders = [String : String]()
+    private var extraOnClose = [(Int, String, Bool) -> ()]()
     
     
     init() {
@@ -18,19 +20,35 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
         self.socket = WebSocket()
         
         socket?.event.error = {error in
-            print(type(of: error))
-            print(error)
+            print("printing error \(type(of: error))")
+            print("printing error \(error)")
         }
         
         socket?.event.close = { (int, string, bool) in
-            print("websocket closed")
+            print("websocket closed \(int, string, bool)")
+            //self.extraOnClose.forEach({(item) in
+                //item(int, string, bool)
+            //})
+            /*if int == 4000 || int == 1006 {
+                var httpHeadersToSend = self.httpHeaders
+                httpHeadersToSend["reconnect"] = self.reconnectKey!
+                var request = URLRequest(url: URL(string: self.serverUrl!)!)
+                for key in self.httpHeaders.keys {
+                    request.addValue(self.httpHeaders[key]!, forHTTPHeaderField: key)
+                }
+                print("about to open")
+                self.socket?.open(request: request)
+                self.startReconnectTimers()
+            }*/
+            
         }
+ 
         
         socket?.event.pong = {data in
             self.stopPongTimer()
             print("has been ponged: \(data)")
         }
-        //RunLoop.
+        
         socket?.event.message = {msg in
             if (type(of: msg) == type(of: [UInt8]())) {
                 let incomingData = Data(msg as! [UInt8])
@@ -44,11 +62,12 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
                 return
             }
             let msgAsString = msg as! String
-            if msgAsString == "connected" {
+            let msgData = try! JSONSerialization.jsonObject(with: msgAsString.data(using: .utf8)!, options: []) as? [String:String]
+            if let newConnectionid = msgData?["newConnectionId"] {
+                print("New Conncetion ID: \(newConnectionid)")
                 self.onReconnect?()
                 return
             }
-            let msgData = try! JSONSerialization.jsonObject(with: msgAsString.data(using: .utf8)!, options: []) as? [String:String]
             if let reconnectId = msgData?["RECONNECTID"] {
                 self.reconnectKey = reconnectId
             } else {
@@ -62,26 +81,51 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
                 }
             }
         }
+        //startReconnectTimers()
     }
     
     private func startReconnectTimers() {
-        pingTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: {(timer) in
-            //self.socket = nil
-            self.socket?.ping()
-            self.startPongTimer(seconds: 3)
-        })
+        print("start rec being caalled")
+        if Thread.isMainThread {
+            print("on main thread")
+            self.pingTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: {(timer) in
+                //self.socket = nil
+                print("about to ping")
+                self.socket?.ping()
+                self.startPongTimer(seconds: 3)
+            })
+        } else {
+            DispatchQueue.main.sync {
+                print("off main thread")
+                self.pingTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: {(timer) in
+                    //self.socket = nil
+                    print("about to ping")
+                    self.socket?.ping()
+                    self.startPongTimer(seconds: 3)
+                })
+            }
+        }
     }
     
     func open(address: String, additionalHTTPHeaders: Dictionary<String, String>) {
         print("URL: \(address)")
         self.serverUrl = address
+        self.httpHeaders = additionalHTTPHeaders
         print()
         var request = URLRequest(url: URL(string: address)!)
         for key in additionalHTTPHeaders.keys {
             request.addValue(additionalHTTPHeaders[key]!, forHTTPHeaderField: key)
         }
-        self.socket?.open(request: request)
-        print("grgreerg")
+        if let socket = self.socket {
+            print("ABOUT TO OPEN")
+            socket.open(request: request)
+        } else {
+            print("about toesgfewgegw OEPEPEPENENENEE")
+            self.socket = WebSocket()
+            self.socket?.open(request: request)
+            
+        }
+        self.startReconnectTimers()
     }
     
     func open(address: String) {
@@ -126,13 +170,28 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
     
     private func initiateReconnect() {
         print("initiating reconnect")
-        //self.pingTimer?.invalidate()
-        //self.pingTimer = nil
+        self.pingTimer?.invalidate()
+        self.pingTimer = nil
         print("closing the socket")
-        self.socket?.close()
-        var request = URLRequest(url: URL(string: self.serverUrl!)!)
-        request.addValue(self.reconnectKey!, forHTTPHeaderField: "reconnect")
-        self.socket?.open(request: request)
+        self.socket?.close(4000, reason: "HI")
+        var httpHeadersToSend = self.httpHeaders
+        httpHeadersToSend["reconnect"] = self.reconnectKey!
+        
+        reconnect(address: self.serverUrl!, additionHTTPHeaders: httpHeadersToSend)
+        
+            //self.open(address: self.serverUrl!, additionalHTTPHeaders: httpHeadersToSend
+    }
+    
+    private func reconnect(address: String, additionHTTPHeaders: [String : String]) {
+        print("RECONNECT READY STATE: \(self.socket?.readyState)")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
+            if self.socket?.readyState == WebSocketReadyState.open {
+                print("calling iteself again")
+                self.reconnect(address: address, additionHTTPHeaders: additionHTTPHeaders)
+            } else {
+                self.open(address: address, additionalHTTPHeaders: additionHTTPHeaders)
+            }
+        })
     }
     
     func close() {
@@ -140,7 +199,6 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
     }
     
     func sendMessage(command: String, payLoad: Any?, callback: ((Any?, ARRError?) -> ())?) {
-        print("send message is being called: \(command)")
         let key = UUID()
         let message = Message(command: command, key: key.uuidString, data: payLoad, error: nil)
         if callback != nil {
@@ -193,7 +251,7 @@ extension Message {
         } else {
             self.error = ARRError(dict: pointErrorDict!)
         }
-        
+
     }
     
     func asDictionary() -> Dictionary<String, Any> {

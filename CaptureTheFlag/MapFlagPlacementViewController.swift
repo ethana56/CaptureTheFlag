@@ -226,6 +226,9 @@ class MapFlagPlacementViewController: CaptureTheFlagViewController, UIGestureRec
     }
     
     private func addToMap(flag: Flag) {
+        if flag.held {
+            return
+        }
         let flagLocation = flag.location
         let coordinate = CLLocationCoordinate2D(latitude: Double(flagLocation!.latitude)!, longitude: Double(flagLocation!.longitude)!)
         var teamName = "no team"
