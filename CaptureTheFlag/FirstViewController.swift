@@ -34,6 +34,12 @@ class FirstViewController: CaptureTheFlagViewController {
         
     }
     
+    @IBAction func createAccount(_ sender: Any) {
+        setUPWSRR()
+    }
+    
+    
+    
     
     private func setUPWSRR() {
         let RRManager = WebSocketRequestResponse()

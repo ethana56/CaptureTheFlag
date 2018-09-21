@@ -25,6 +25,7 @@ class GameLobbyViewController: CaptureTheFlagViewController, UITableViewDelegate
                 self.handleError(error!)
                 return
             }
+            print("THESE ARE THE PLAYERS\(players!)")
             for player in players! {
                 self.players[player.id] = player
             }
@@ -105,7 +106,6 @@ class GameLobbyViewController: CaptureTheFlagViewController, UITableViewDelegate
     }
     
     private func createListeners() {
-        
         self.listenerKeys.append(
             self.serverAccess!.addTeamAddedListener(callback: {(team) in
                 if self.teamLabel1.text == "" {

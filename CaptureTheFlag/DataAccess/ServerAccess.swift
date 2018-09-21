@@ -27,7 +27,7 @@ class ServerAccess {
     }
     
     //capture-the-flag-server.herokuapp.com/
-    //192.168.86.63:8000
+    //192.168.86.115:8000
     
     func initaiteConnection(username: String, password: String, callback: @escaping (GameError?) -> ()) {
         print("is logging in")
@@ -60,6 +60,31 @@ class ServerAccess {
         }.resume()
     }
     
+    func createAccount(username: String, password: String, callback: @escaping (GameError?) -> ()) {
+        print(username)
+        print(password)
+        print("create account is getting called")
+        var request = URLRequest(url: URL(string: "https://capture-the-flag-server.herokuapp.com/createAccount")!)
+        request.httpMethod = "POST"
+        request.setValue("Application/json", forHTTPHeaderField: "Content-Type")
+        let paramDictionary = ["username" : username, "password" : password]
+        guard let httpBody = try? JSONSerialization.data(withJSONObject: paramDictionary, options: []) else {
+            return
+        }
+        request.httpBody = httpBody
+        let session = URLSession.shared
+        session.dataTask(with: request) {(data, urlResponse, error) in
+            if let data = data {
+                print("I think it worked")
+                DispatchQueue.main.async {
+                    callback(nil)
+                }
+            } else {
+                print("I think it failed")
+            }
+        }.resume()
+    }
+    
     func addTeamAddedListener(callback: @escaping (Team) -> ()) -> GameListenerKey {
         //print("TEAM ADDED IS BEING CALLED")
         let listenerKey = self.point.addListener(for: "teamAdded", callback: {(data) in
@@ -75,6 +100,7 @@ class ServerAccess {
         })
         return GameListenerKey(key: listenerKey.key)
     }
+    
     
     func addPlayerJoinedTeamListener(callback: @escaping (String, Int) -> ()) -> GameListenerKey {
         let listenerKey = self.point.addListener(for: "playerJoinedTeam", callback: {(data) in
@@ -400,6 +426,7 @@ class ServerAccess {
     
     func getPlayers(callback: @escaping(Array<Player>?, GameError?) -> ()) {
         self.point.sendMessage(command: "getPlayers", payLoad: nil, callback: {(data, error) in
+            print("This is the data from get players")
             if error != nil {
                 print(error!.description)
                 callback(nil, GameError.serverError)

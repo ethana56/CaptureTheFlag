@@ -12,7 +12,7 @@ class Player: CustomStringConvertible, Codable, Moveable {
     
     //weak var delegate: PlayerLocationDelegate? = nil
     
-
+    
     init(name: String, id: String, flagHeld: String?, location: String?, leader: Bool, isTagged: Bool?) {
         self.name = name
         self.id = id

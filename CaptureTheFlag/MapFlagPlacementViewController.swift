@@ -49,6 +49,7 @@ import CoreLocation
 class MapFlagPlacementViewController: CaptureTheFlagViewController, UIGestureRecognizerDelegate, MKMapViewDelegate, CLLocationManagerDelegate {
     @IBOutlet weak var startGameButton: UIButton!
     @IBOutlet weak var map: MKMapView!
+    var mapGestureRecognizer: UITapGestureRecognizer?
     var players = [String:Player]()
     var teams = [Int:Team]()
     var flags = [String:Flag]()
@@ -58,6 +59,7 @@ class MapFlagPlacementViewController: CaptureTheFlagViewController, UIGestureRec
     var flagAnnotations = [String:MKAnnotation]()
     
     var listenerKeys = [GameListenerKey]()
+    
     
     let locationManager = CLLocationManager()
     
@@ -99,8 +101,9 @@ class MapFlagPlacementViewController: CaptureTheFlagViewController, UIGestureRec
             })
         }
         self.createListeners()
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(createFlag(gestureRecognizer:)))
-        self.map?.addGestureRecognizer(tapGesture)
+        self.mapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(createFlag(gestureRecognizer:)))
+        self.map?.addGestureRecognizer(self.mapGestureRecognizer!)
+        
     }
     
     
@@ -274,6 +277,7 @@ class MapFlagPlacementViewController: CaptureTheFlagViewController, UIGestureRec
             }))!,
             
             (self.serverAccess?.addGameStateChangedListener(callback: {(gameState) in
+                self.map?.removeGestureRecognizer(self.mapGestureRecognizer!)
                 print("New game state: \(gameState)")
             }))!,
             

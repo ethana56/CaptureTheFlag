@@ -65,6 +65,7 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
             let msgData = try! JSONSerialization.jsonObject(with: msgAsString.data(using: .utf8)!, options: []) as? [String:String]
             if let newConnectionid = msgData?["newConnectionId"] {
                 print("New Conncetion ID: \(newConnectionid)")
+                self.reconnectKey = newConnectionid
                 self.onReconnect?()
                 return
             }
@@ -85,21 +86,16 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
     }
     
     private func startReconnectTimers() {
-        print("start rec being caalled")
         if Thread.isMainThread {
-            print("on main thread")
             self.pingTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: {(timer) in
                 //self.socket = nil
-                print("about to ping")
                 self.socket?.ping()
                 self.startPongTimer(seconds: 3)
             })
         } else {
             DispatchQueue.main.sync {
-                print("off main thread")
                 self.pingTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: {(timer) in
                     //self.socket = nil
-                    print("about to ping")
                     self.socket?.ping()
                     self.startPongTimer(seconds: 3)
                 })
@@ -108,7 +104,6 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
     }
     
     func open(address: String, additionalHTTPHeaders: Dictionary<String, String>) {
-        print("URL: \(address)")
         self.serverUrl = address
         self.httpHeaders = additionalHTTPHeaders
         print()
@@ -117,10 +112,8 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
             request.addValue(additionalHTTPHeaders[key]!, forHTTPHeaderField: key)
         }
         if let socket = self.socket {
-            print("ABOUT TO OPEN")
             socket.open(request: request)
         } else {
-            print("about toesgfewgegw OEPEPEPENENENEE")
             self.socket = WebSocket()
             self.socket?.open(request: request)
             
@@ -137,7 +130,7 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
     
     
     private func proccessIncomingMessage(message: Message) {
-        //print(message)
+        print(message)
         if message.command == nil {
             print(message)
             let listener = self.responseListeners[UUID(uuidString: message.key!)!]!
@@ -154,7 +147,6 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
     }
     
     func startPongTimer(seconds: Double) {
-        print("starting the pong timer")
         self.pongTimer = Timer.scheduledTimer(withTimeInterval: seconds, repeats: false, block: {(timer) in
             self.initiateReconnect()
         })
@@ -163,30 +155,24 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
     
     
     private func stopPongTimer() {
-        print("stopping the pong timer")
         self.pongTimer?.invalidate()
         self.pongTimer = nil
     }
     
     private func initiateReconnect() {
-        print("initiating reconnect")
         self.pingTimer?.invalidate()
         self.pingTimer = nil
-        print("closing the socket")
         self.socket?.close(4000, reason: "HI")
         var httpHeadersToSend = self.httpHeaders
         httpHeadersToSend["reconnect"] = self.reconnectKey!
-        
         reconnect(address: self.serverUrl!, additionHTTPHeaders: httpHeadersToSend)
         
             //self.open(address: self.serverUrl!, additionalHTTPHeaders: httpHeadersToSend
     }
     
     private func reconnect(address: String, additionHTTPHeaders: [String : String]) {
-        print("RECONNECT READY STATE: \(self.socket?.readyState)")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
             if self.socket?.readyState == WebSocketReadyState.open {
-                print("calling iteself again")
                 self.reconnect(address: address, additionHTTPHeaders: additionHTTPHeaders)
             } else {
                 self.open(address: address, additionalHTTPHeaders: additionHTTPHeaders)
