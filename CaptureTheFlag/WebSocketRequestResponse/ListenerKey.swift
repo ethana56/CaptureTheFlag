@@ -1,7 +1,7 @@
 
 
 import Foundation
-struct ListenerKey {
+public struct ListenerKey {
     let command: String
     let key: UUID
     init(command: String, key: UUID) {

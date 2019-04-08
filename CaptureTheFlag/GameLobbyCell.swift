@@ -1,10 +1,4 @@
-//
-//  GameLobbyCell.swift
-//  CaptureTheFlag
-//
-//  Created by Ethan Abrams on 6/3/18.
-//  Copyright © 2018 Joe Durand. All rights reserved.
-//
+
 
 import UIKit
 
@@ -13,6 +7,8 @@ class GameLobbyCell: UITableViewCell {
     
     @IBOutlet weak var teamNameLabel: UILabel!
     @IBOutlet weak var playerNameLabel: UILabel!
+    weak var player: Player?
+    weak var team: Team?
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -24,8 +20,16 @@ class GameLobbyCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
+    func setPlayer(player: Player) {
+        self.player = player
+        self.playerNameLabel.text = player.name
+    }
     
-        
+    func setTeam(team: Team) {
+        self.team = team
+        self.teamNameLabel.text = team.name
+    }
+    
     func setPlayerName(name: String) {
         self.playerNameLabel.text = name
     }
@@ -33,6 +37,4 @@ class GameLobbyCell: UITableViewCell {
     func setTeam(teamName: String) {
         self.teamNameLabel.text = teamName
     }
-    
-
 }

@@ -1,85 +1,45 @@
-//
-//  MapViewController.swift
-//  CaptureTheFlag
-//
-//  Created by Ethan Abrams on 5/26/18.
-
-//
-
 import UIKit
 import MapKit
 import CoreLocation
-
-@objc class PlayerAnnotaton: NSObject, MKAnnotation {
-    var coordinate: CLLocationCoordinate2D
-    var title: String?
-    var subtitle: String?
-    var team: Int?
-    let playerId: String
-    
-    init(coordinate: CLLocationCoordinate2D, title: String?, subtitle: String?, team: Int, playerId: String) {
-        self.coordinate = coordinate
-        self.title = title
-        self.subtitle = subtitle
-        self.team = team
-        self.playerId = playerId
-        super.init()
-    }
-}
-
-@objc class FlagAnnotation: NSObject, MKAnnotation {
-    var coordinate: CLLocationCoordinate2D
-    var title: String?
-    var subtitle: String?
-    var team: Int?
-    var flagId: String
-    
-    init(coordinate: CLLocationCoordinate2D, title: String?, subtitle: String?, team: Int, flagId: String) {
-        self.coordinate = coordinate
-        self.title = title
-        self.subtitle = subtitle
-        self.team = team
-        self.flagId = flagId
-        super.init()
-    }
-}
-
-
-
 class MapFlagPlacementViewController: CaptureTheFlagViewController, UIGestureRecognizerDelegate, MKMapViewDelegate, CLLocationManagerDelegate {
     @IBOutlet weak var startGameButton: UIButton!
     @IBOutlet weak var map: MKMapView!
     var mapGestureRecognizer: UITapGestureRecognizer?
-    var players = [String:Player]()
-    var teams = [Int:Team]()
-    var flags = [String:Flag]()
-    var userPlayer: Player?
     
-    var playerAnnotations = [String:MKAnnotation]()
-    var flagAnnotations = [String:MKAnnotation]()
+    @IBOutlet weak var notificationText: UILabel!
+    var players = Set<Player>()
+    var teams = Set<Team>()
+    var flags = Set<Flag>()
+    weak var userPlayer: Player?
+    
+    var playerObserverKeys = [Player:[GameObserverDeletionKey]]()
+    var flagObserverKeys = [Flag:[GameObserverDeletionKey]]()
+    var teamObserverKeys = [Team: [GameObserverDeletionKey]]()
+    
+    var playerAnnotations = [Player:ConvenientPlayerAnnotaton]()
+    var flagAnnotations = [Flag:ConvenientFlagAnnotation]()
     
     var listenerKeys = [GameListenerKey]()
+    var gameState: Int!
     
-    
+    var tapMode = TapMode.flag
+    var boundary: GameBoundary?
     let locationManager = CLLocationManager()
+    
+    var winningTeam: Team?
+    
+    enum TapMode {
+        case flag
+        case boundary
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setUpLocation()
         self.map.delegate = self
-        self.serverAccess?.onReconnect = {
-            self.serverAccess?.getCurrentGameState(callback: {(playersFlagsTeams, error) in
-                if error != nil {
-                    self.handleError(error!)
-                } else {
-                    let players = playersFlagsTeams?.0
-                    let flags = playersFlagsTeams?.1
-                    let teams = playersFlagsTeams?.2
-                    self.updateData(players: players!, flags: flags!, teams: teams!)
-                    self.reloadMap()
-                }
-            })
-        }
+        self.navigationItem.hidesBackButton = true
+        
+        notificationText.alpha = 0
         if self.players.count == 0 {
             self.serverAccess?.getCurrentGameState(callback: {(playersFlagsTeams, error) in
                 if error != nil {
@@ -88,92 +48,129 @@ class MapFlagPlacementViewController: CaptureTheFlagViewController, UIGestureRec
                     let players = playersFlagsTeams?.0
                     let flags = playersFlagsTeams?.1
                     let teams = playersFlagsTeams?.2
+                    let name = playersFlagsTeams?.4
+                    self.gameState = playersFlagsTeams?.5
+                    let userPlayerId = playersFlagsTeams?.6
                     self.updateData(players: players!, flags: flags!, teams: teams!)
-                    self.reloadMap()
-                    self.serverAccess?.getPlayerGameInfo(callback: {(player, error) in
-                        if error != nil {
-                            self.handleError(error!)
-                        } else {
-                            self.userPlayer = self.players[player!.id]
+                    for player in self.players {
+                        if player.id == userPlayerId {
+                            self.userPlayer = player
+                            break
                         }
-                    })
+                    }
+                    if name != nil {
+                        self.navigationItem.title = name!
+                    }
+                    self.reloadMap()
+                    self.createListeners()
+                    self.addPlayerObservers()
+                    self.addFlagObservers()
+                    self.addTeamObservers()
                 }
             })
         }
-        self.createListeners()
-        self.mapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(createFlag(gestureRecognizer:)))
+        self.mapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(addItemToMap(gestureRecognizer:)))
         self.map?.addGestureRecognizer(self.mapGestureRecognizer!)
         
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        self.removeAllObservers()
+        self.removeAllData()
+        
+    }
     
-    @objc func createFlag(gestureRecognizer: UITapGestureRecognizer) {
+    private func removeAllData() {
+        self.players.removeAll()
+        self.flags.removeAll()
+        self.teams.removeAll()
+        self.playerObserverKeys.removeAll()
+        self.flagObserverKeys.removeAll()
+        self.teamObserverKeys.removeAll()
+        self.playerAnnotations.removeAll()
+        self.flagAnnotations.removeAll()
+        self.boundary = nil
+        self.userPlayer = nil
+    }
+    
+    @objc func addItemToMap(gestureRecognizer: UITapGestureRecognizer) {
         let touchpoint = gestureRecognizer.location(in: self.map)
         let locationTapped = self.map?.convert(touchpoint, toCoordinateFrom: self.map)
-        self.serverAccess?.createFlag(latitude: String(locationTapped!.latitude), longitude: String(locationTapped!.longitude), callback: {(error) in
-            if error != nil {
-                self.handleError(error!)
-            }
-        })
+        if self.tapMode == TapMode.flag {
+            self.serverAccess?.createFlag(latitude: String(locationTapped!.latitude), longitude:
+                String(locationTapped!.longitude), callback: {(error) in
+                if error != nil {
+                    self.animateNotification(text: self.translateError(error: error!))
+                }
+            })
+        } else if self.tapMode == TapMode.boundary {
+            self.serverAccess?.createGameBoundary(location: Location(latitude: Double(locationTapped!.latitude), longitude: Double(locationTapped!.longitude)), direction: BoundaryDirection.verical, callback: {(error) in
+                
+            })
+        }
+        
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if let flagAnnotation = annotation as? FlagAnnotation {
-            var annotationView = self.map?.dequeueReusableAnnotationView(withIdentifier: "flag")
+            var annotationView = self.map?.dequeueReusableAnnotationView(withIdentifier: "flag") as? FlagAnnotationView
             if annotationView == nil {
-                annotationView = MKAnnotationView(annotation: flagAnnotation, reuseIdentifier: "flag")
-            }
-            if flagAnnotation.team == 1 {
-                annotationView?.image = UIImage(named: "RedFlag")
-                annotationView?.centerOffset = CGPoint(x:22,y: -20)
+                annotationView = FlagAnnotationView(annotation: flagAnnotation, reuseIdentifier: "flag")
             } else {
-                annotationView?.image = UIImage(named: "BlueFlag")
-                annotationView?.centerOffset = CGPoint(x:22, y:-20)
+                annotationView!.update(annotation: flagAnnotation)
             }
+            
             return annotationView
         }
-        if let playerAnnotation = annotation as? PlayerAnnotaton {
-            var annotationView: MKMarkerAnnotationView?
-            if playerAnnotation.team == 1 {
-                annotationView = self.map.dequeueReusableAnnotationView(withIdentifier: "team1") as? MKMarkerAnnotationView
-                if annotationView == nil {
-                    annotationView = MKMarkerAnnotationView(annotation: playerAnnotation, reuseIdentifier: "team1")
-                    annotationView?.markerTintColor = UIColor.red
-                }
-            } else if playerAnnotation.team == 2 {
-                annotationView = self.map.dequeueReusableAnnotationView(withIdentifier: "team2") as? MKMarkerAnnotationView
-                if annotationView == nil {
-                    annotationView = MKMarkerAnnotationView(annotation: playerAnnotation, reuseIdentifier: "team2")
-                    annotationView?.markerTintColor = UIColor.blue
-                }
+        if let playerAnnotation = annotation as? ConvenientPlayerAnnotaton {
+            var annotationView = self.map?.dequeueReusableAnnotationView(withIdentifier: "player") as? PlayerAnnotationView
+            if annotationView == nil {
+                annotationView = PlayerAnnotationView(annotation: playerAnnotation, reuseIdentifier: "player")
+            } else {
+                annotationView!.update(annotation: playerAnnotation)
             }
             return annotationView
         }
         return nil
     }
     
-    
-    
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        if let overlay = overlay as? MKCircle {
+            let circleRenderer = MKCircleRenderer(circle: overlay)
+            circleRenderer.fillColor = UIColor.blue
+            circleRenderer.alpha = 0.15
+            return circleRenderer
+        }
+        if let overlay = overlay as? MKPolyline {
+            let lineRenderer = MKPolylineRenderer(polyline: overlay)
+            return lineRenderer
+        }
+        return MKCircleRenderer(overlay: overlay)
+        
+    }
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        if let playerAnnotation = view.annotation! as? PlayerAnnotaton {
-            self.serverAccess?.tagPlayer(id: playerAnnotation.playerId, callback: {(error) in
+        if let playerAnnotation = view.annotation! as? ConvenientPlayerAnnotaton {
+            if self.gameState == 1 && self.userPlayer?.leader != nil {
+                self.serverAccess?.makeLeader(player: playerAnnotation.player!, callback: {(error) in
+                    if error != nil {
+                        self.animateNotification(text: self.translateError(error: error!))
+                    }
+                })
+                return
+            }
+            self.serverAccess?.tagPlayer(player: playerAnnotation.player!, callback: {(error) in
                 if error != nil {
                     print(error!.rawValue)
-                    //self.handleError(error!)
+                    self.animateNotification(text: self.translateError(error: error!))
                 }
             })
-        } else if let flagAnnotation = view.annotation! as? FlagAnnotation {
-            self.serverAccess?.pickUpFlag(flagId: flagAnnotation.flagId, callback: {(error) in
+        } else if let flagAnnotation = view.annotation! as? ConvenientFlagAnnotation {
+            self.serverAccess?.pickUpFlag(flag: flagAnnotation.flag!, callback: {(error) in
                 if error != nil {
-                    print("Tagging: \(error!)")
-                    self.handleError(error!)
+                    self.animateNotification(text: self.translateError(error: error!))
                 }
             })
         }
-    }
-    
-    private func createPlayerAnnotation(team: String) {
-        
     }
     
     private func updateData(players: [Player], flags: [Flag], teams: [Team]) {
@@ -181,70 +178,49 @@ class MapFlagPlacementViewController: CaptureTheFlagViewController, UIGestureRec
         self.flags.removeAll()
         self.teams.removeAll()
         for player in players {
-            self.players[player.id] = player
+           self.players.insert(player)
         }
         for flag in flags {
-            self.flags[flag.id] = flag
+            self.flags.insert(flag)
         }
         for team in teams {
-            self.teams[team.id] = team
+            self.teams.insert(team)
         }
     }
     
     private func reloadMap() {
-        for (_, player) in self.players {
-            if let playerAnnotation = self.playerAnnotations[player.id] {
+        for player in self.players {
+            if let playerAnnotation = self.playerAnnotations[player] {
                 self.map.removeAnnotation(playerAnnotation)
-                self.playerAnnotations.removeValue(forKey: player.id)
+                self.playerAnnotations.removeValue(forKey: player)
             }
-            self.addToMap(player: player)
+            self.addToMap(player)
         }
-        for (_, flag) in self.flags {
-            if let flagAnnotation = self.flagAnnotations[flag.id] {
+        for flag in self.flags {
+            if let flagAnnotation = self.flagAnnotations[flag] {
                 self.map.removeAnnotation(flagAnnotation)
-                self.flagAnnotations.removeValue(forKey: flag.id)
+                self.flagAnnotations.removeValue(forKey: flag)
             }
-            self.addToMap(flag: flag)
+            self.addToMap(flag)
         }
     }
     
     
     
-    private func addToMap(player: Player) {
+    private func addToMap(_ player: Player) {
         if let playerLocation = player.location {
-            let coordinate = CLLocationCoordinate2D(latitude: Double(playerLocation.latitude)!, longitude: Double(playerLocation.longitude)!)
-            var teamName = "no team"
-            var teamId: Int?
-            for team in teams.values {
-                if team.contians(playerId: player.id) {
-                    teamName = team.name
-                    teamId = team.id
-                    break
-                }
-            }
-            let annotation = PlayerAnnotaton(coordinate: coordinate, title: player.name, subtitle: teamName, team: teamId!, playerId: player.id)
-            self.playerAnnotations[player.id] = annotation
+            let annotation = ConvenientPlayerAnnotaton(player: player)
+            self.playerAnnotations[player] = annotation
             self.map?.addAnnotation(annotation)
         }
     }
     
-    private func addToMap(flag: Flag) {
-        if flag.held {
+    private func addToMap(_ flag: Flag) {
+        if flag.heldBy != nil {
             return
         }
-        let flagLocation = flag.location
-        let coordinate = CLLocationCoordinate2D(latitude: Double(flagLocation!.latitude)!, longitude: Double(flagLocation!.longitude)!)
-        var teamName = "no team"
-        var teamId: Int?
-        for team in teams.values {
-            if team.contains(flagId: flag.id) {
-                teamName = team.name
-                teamId = team.id
-                break
-            }
-        }
-        let annotation = FlagAnnotation(coordinate: coordinate, title: "Flag", subtitle: teamName, team: teamId!, flagId: flag.id)
-        self.flagAnnotations[flag.id] = annotation
+        let annotation = ConvenientFlagAnnotation(flag: flag)
+        self.flagAnnotations[flag] = annotation
         self.map?.addAnnotation(annotation)
     }
     
@@ -257,75 +233,233 @@ class MapFlagPlacementViewController: CaptureTheFlagViewController, UIGestureRec
         })
     }
     
+    private func addPlayerObservers() {
+        for player in self.players {
+            if self.playerObserverKeys[player] == nil {
+                self.playerObserverKeys[player] = []
+            }
+          self.playerObserverKeys[player]!.append(player.observeLocation({(location) in
+                if let annotation = self.playerAnnotations[player] {
+                    annotation.updateLocation()
+                    self.map?.removeAnnotation(annotation)
+                    self.map?.addAnnotation(annotation)
+                } else {
+                    self.addToMap(player)
+                }
+            }))
+            
+           self.playerObserverKeys[player]!.append(player.observeTagged({(tagged, tagger) in
+                if tagged {
+                    if let annotation = self.playerAnnotations[player] {
+                        annotation.tagged = true
+                        self.map?.removeAnnotation(annotation)
+                        self.map?.addAnnotation(annotation)
+                    }
+                    self.animateNotification(text: "You have been tagged by \(String(describing: tagger?.name))")
+                } else {
+                    if let annotation = self.playerAnnotations[player] {
+                        annotation.tagged = false
+                        self.map?.removeAnnotation(annotation)
+                        self.map?.addAnnotation(annotation)
+                    }
+                }
+            }))
+            
+           self.playerObserverKeys[player]!.append(player.observePickedUpFlag({(pickedUp, flag) in
+                if pickedUp && flag != nil {
+                    self.map.removeAnnotation(self.flagAnnotations[flag!]!)
+                } else if !pickedUp && flag != nil {
+                    if let annotation = self.flagAnnotations[flag!] {
+                        annotation.updateLocation()
+                        self.map.addAnnotation(annotation)
+                    }
+                }
+            }))
+            
+           self.playerObserverKeys[player]!.append(player.observerMadeLeader({(madeLeader) in
+                self.animateNotification(text: "You were made a leader")
+            }))
+        }
+    }
+    
+    private func addFlagObservers() {
+        for flag in self.flags {
+            if self.flagObserverKeys[flag] == nil {
+                self.flagObserverKeys[flag] = []
+            }
+           self.flagObserverKeys[flag]!.append(flag.observerLocation(observer: {(location) in
+                if let annotation = self.flagAnnotations[flag] {
+                    annotation.updateLocation()
+                    self.map?.removeAnnotation(annotation)
+                    self.map?.addAnnotation(annotation)
+                }
+            }))
+        }
+    }
+    
+    private func addTeamObservers() {
+        for team in self.teams {
+            if self.teamObserverKeys[team] == nil {
+                self.teamObserverKeys[team] = []
+            }
+           self.teamObserverKeys[team]!.append(team.observerPlayerAdded(observer: {(player, added) in
+                if let annotation = self.playerAnnotations[player] {
+                    annotation.team = team.id
+                    self.map?.removeAnnotation(annotation)
+                    self.map.addAnnotation(annotation)
+                }
+            }))
+           self.teamObserverKeys[team]!.append(team.observeFlagAdded(observer: {(flag, added) in
+                if let annotation = self.flagAnnotations[flag] {
+                    annotation.team = team.id
+                    self.map?.removeAnnotation(annotation)
+                    self.map?.addAnnotation(annotation)
+                }
+            }))
+        }
+    }
+    
     private func createListeners() {
         let listenerArray: [GameListenerKey] = [
-            (self.serverAccess?.addLocationListener(callback: {(playerId, location) in
-                if let player = self.players[playerId] {
-                    player.location = location
-                    if let annotation = self.playerAnnotations[player.id] {
-                        self.playerAnnotations.removeValue(forKey: playerId)
-                        self.map?.removeAnnotation(annotation)
-                    }
-                    self.addToMap(player: player)
-                }
-            }))!,
-            
-            (self.serverAccess?.addFlagAddedListener(callback: {(flag, teamIdOfFlag) in
-                self.flags[flag.id] = flag
-                self.teams[teamIdOfFlag]?.addFlag(id: flag.id)
-                self.addToMap(flag: flag)
+            (self.serverAccess?.addFlagAddedListener(callback: {(flag) in
+                self.flags.insert(flag)
+                self.addToMap(flag)
             }))!,
             
             (self.serverAccess?.addGameStateChangedListener(callback: {(gameState) in
                 self.map?.removeGestureRecognizer(self.mapGestureRecognizer!)
-                print("New game state: \(gameState)")
+                self.gameState = gameState
             }))!,
             
-            (self.serverAccess?.addPlayerTaggedListener(callback: {(playerId, flagHeldLocation) in
-                let player = self.players[playerId]!
-                player.isTagged = true
-                if let flagHeldId = player.flagHeld {
-                    player.flagHeld = nil
-                    self.flags[flagHeldId]!.held = false
-                    self.flags[flagHeldId]!.location = flagHeldLocation!
-                    self.addToMap(flag: self.flags[flagHeldId]!)
-                }
-            }))!,
+            ((self.serverAccess?.addBoundaryAddedListener(callback: {(boundary) in
+                self.boundary = boundary
+                let gameBounds = MKCircle(center: boundary.location, radius: 4000)
+                let polyline = self.createPolyLine(boundary: boundary)
+                print("This is the polyline")
+                print(polyline?.coordinate)
+                self.map.add(gameBounds)
+                self.map.add(polyline!)
+            }))!),
             
-            (self.serverAccess?.addFlagPickedUpListener(callback: {(flagId, playerId) in
-                self.flags[flagId]!.held = true
-                self.players[playerId]!.flagHeld = flagId
-                self.map.removeAnnotation(self.flagAnnotations[flagId]!)
+            (self.serverAccess?.addGameOverListener(callback: {(winningTeam) in
+                self.winningTeam = winningTeam
+                
+                self.performSegue(withIdentifier: "GameOver", sender: nil)
             }))!
+            
         ]
-        self.listenerKeys.append(contentsOf: [])
+        self.listenerKeys.append(contentsOf: listenerArray)
     }
     
+    private func animateNotification(text: String) {
+        self.notificationText.alpha = 0
+        self.notificationText.text = text
+        UIView.animate(withDuration: 1.0, animations: {self.notificationText.alpha = 1}, completion: {(completed) in
+            Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false, block: {(timer) in
+                 UIView.animate(withDuration: 0.5, animations: {self.notificationText.alpha = 0})
+            })
+        })
+    }
     
+    private func removeAllObservers() {
+        for player in self.playerObserverKeys.keys {
+            for key in self.playerObserverKeys[player]! {
+                player.removerObserver(key: key)
+            }
+            self.playerObserverKeys[player]!.removeAll()
+        }
+        for flag in self.flagObserverKeys.keys {
+            for key in self.flagObserverKeys[flag]! {
+                flag.removeObserver(key: key)
+            }
+            self.flagObserverKeys[flag]!.removeAll()
+        }
+        
+        for team in self.teamObserverKeys.keys {
+            for key in self.teamObserverKeys[team]! {
+                team.removeObserver(key: key)
+            }
+            self.teamObserverKeys[team]!.removeAll()
+        }
+    }
+    
+    private func createPolyLine(boundary: GameBoundary) -> MKPolyline? {
+        if boundary.direction == BoundaryDirection.verical {
+            let latitudeBottom = boundary.location.latitude - 4000
+            let latitudeTop = boundary.location.latitude + 4000
+            let longitude = boundary.location.longitude
+            let coord1 = CLLocationCoordinate2D(latitude: latitudeBottom, longitude: longitude)
+            let coord2 = CLLocationCoordinate2D(latitude: latitudeTop, longitude: longitude)
+            let coords = [coord1, coord2]
+            print("It should be returning an mkpolyline")
+            return MKPolyline(coordinates: coords, count: coords.count)
+        }
+        //Add horizontal later
+        return nil
+    }
     
     func handleError(_ error: GameError) {
         print(error)
     }
     
-    
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         
     }
     
-    @IBAction func printInfo(_ sender: Any) {
-        print(self.userPlayer?.flagHeld!)
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        print("MAP VIEW CONTROLLER IS PREPARING FOR THE SEQUE")
+        if let nextViewController = segue.destination as? GameOverViewController {
+            nextViewController.winningTeam = self.winningTeam
+        }
     }
     
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    @IBAction func printInfo(_ sender: Any) {
+        if (self.tapMode == TapMode.flag) {
+            self.tapMode = TapMode.boundary
+        } else {
+            self.tapMode = TapMode.flag
+        }
+    }
+    
+    @IBAction func dropFlag(_ sender: Any) {
+        self.serverAccess?.dropFlag(callback: {(error) in
+            print(error)
+        })
+    }
+    
+     public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         self.serverAccess?.updateLocation(latitude: String(locations.last!.coordinate.latitude), longitude: String(locations.last!.coordinate.longitude))
     }
     
     private func setUpLocation() {
-        self.locationManager.requestAlwaysAuthorization()
         self.locationManager.delegate = self
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+        self.locationManager.requestAlwaysAuthorization()
         self.locationManager.startUpdatingLocation()
+    }
+    
+    private func translateError(error: GameError) -> String {
+        switch error {
+        case .playersNotCloseEnough:
+            return "You must be closer to do that"
+        case .playerDoesNotHavePermission:
+            return "You do not have permission to do that"
+        case .playerNotInBounds:
+            return "You must be in bounds to do that"
+        case .incorrectGameState:
+            return "The game is not in the correct mode to do that"
+        case .serverError:
+            return "There is an error accessing the server"
+        default:
+            return "Something went wrong"
+        }
+    }
+}
+
+extension MKCircle {
+    convenience init(center: Location, radius: Double) {
+        let cllocation = CLLocationCoordinate2D(latitude: center.latitude, longitude: center.longitude)
+        self.init(center: cllocation, radius: radius)
     }
 }

@@ -2,7 +2,6 @@
 import Foundation
 import SwiftWebSocket
 public class WebSocketRequestResponse: AsyncRequestResponse {
-    
     private var responseListeners = Dictionary<UUID, (Message) -> ()>()
     private var listeners = [String : Dictionary<UUID, (Message) -> ()>]()
     private var socket: WebSocket?
@@ -13,34 +12,23 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
     private var serverUrl: String?
     private var httpHeaders = [String : String]()
     private var extraOnClose = [(Int, String, Bool) -> ()]()
+    private var onClose: (() -> ())?
     
-    
-    init() {
-        
+    public init() {
         self.socket = WebSocket()
-        
         socket?.event.error = {error in
             print("printing error \(type(of: error))")
             print("printing error \(error)")
         }
         
+        socket?.event.open = {
+            print("The web socket was opened")
+        }
+        
         socket?.event.close = { (int, string, bool) in
             print("websocket closed \(int, string, bool)")
-            //self.extraOnClose.forEach({(item) in
-                //item(int, string, bool)
-            //})
-            /*if int == 4000 || int == 1006 {
-                var httpHeadersToSend = self.httpHeaders
-                httpHeadersToSend["reconnect"] = self.reconnectKey!
-                var request = URLRequest(url: URL(string: self.serverUrl!)!)
-                for key in self.httpHeaders.keys {
-                    request.addValue(self.httpHeaders[key]!, forHTTPHeaderField: key)
-                }
-                print("about to open")
-                self.socket?.open(request: request)
-                self.startReconnectTimers()
-            }*/
-            
+            self.onClose?()
+            self.onClose = nil
         }
  
         
@@ -50,6 +38,8 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
         }
         
         socket?.event.message = {msg in
+            print("Here is the message")
+            print(msg)
             if (type(of: msg) == type(of: [UInt8]())) {
                 let incomingData = Data(msg as! [UInt8])
                 let rawJSON = try! JSONSerialization.jsonObject(with: incomingData, options: []) as! [String: Any]
@@ -103,10 +93,9 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
         }
     }
     
-    func open(address: String, additionalHTTPHeaders: Dictionary<String, String>) {
+    public func open(address: String, additionalHTTPHeaders: Dictionary<String, String>) {
         self.serverUrl = address
         self.httpHeaders = additionalHTTPHeaders
-        print()
         var request = URLRequest(url: URL(string: address)!)
         for key in additionalHTTPHeaders.keys {
             request.addValue(additionalHTTPHeaders[key]!, forHTTPHeaderField: key)
@@ -121,32 +110,32 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
         self.startReconnectTimers()
     }
     
-    func open(address: String) {
+    public func open(address: String) {
         self.serverUrl = address
         var request = URLRequest(url: URL(string: address)!)
         self.socket?.open(request: request)
         //self.startReconnectTimers()
     }
     
-    
     private func proccessIncomingMessage(message: Message) {
-        print(message)
         if message.command == nil {
             print(message)
             let listener = self.responseListeners[UUID(uuidString: message.key!)!]!
             listener(message)
             self.responseListeners.removeValue(forKey: UUID(uuidString: message.key!)!)
         } else {
-            print(message)
+            print("INCOMING MESSSAGE WORKING")
             if self.listeners[message.command!] != nil {
+                print("at least the command is not nil")
                 for listener in (self.listeners[(message.command)!]?.values)! {
+                    print("LOOPING THROUGH LISTENERS")
                     listener(message)
                 }
             }
         }
     }
     
-    func startPongTimer(seconds: Double) {
+    public func startPongTimer(seconds: Double) {
         self.pongTimer = Timer.scheduledTimer(withTimeInterval: seconds, repeats: false, block: {(timer) in
             self.initiateReconnect()
         })
@@ -180,18 +169,23 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
         })
     }
     
-    func close() {
+    public func close(closed: @escaping () -> ()) {
+        self.stopPongTimer()
+        if self.socket?.readyState != WebSocketReadyState.open {
+            closed()
+            return
+        }
+        self.onClose = closed
         self.socket?.close()
     }
     
-    func sendMessage(command: String, payLoad: Any?, callback: ((Any?, ARRError?) -> ())?) {
+    public func sendMessage(command: String, payLoad: Any?, callback: ((Any?, ARRError?) -> ())?) {
         let key = UUID()
         let message = Message(command: command, key: key.uuidString, data: payLoad, error: nil)
         if callback != nil {
-            func callackWrapper(msg: Message) {
+            self.responseListeners[key] = {(msg) in
                 callback!(msg.data, msg.error)
             }
-            self.responseListeners[key] = callackWrapper(msg:)
         }
         let messageAsDictionary = message.asDictionary()
         let messageToSend = try! JSONSerialization.data(withJSONObject: messageAsDictionary, options: [])
@@ -199,7 +193,7 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
         self.socket!.send(messageToSend)
     }
     
-    func addListener(for command: String, callback: @escaping(Any?) -> ()) -> ListenerKey {
+    public func addListener(for command: String, callback: @escaping(Any?) -> ()) -> ListenerKey {
         var key = UUID()
         func callbackWrapper(msg: Message) {
             callback(msg.data)
@@ -211,9 +205,11 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
         return ListenerKey(command: command, key: key)
     }
     
-    func removeListener(listenerKey: ListenerKey) {
+    public func removeListener(listenerKey: ListenerKey) {
         listeners[listenerKey.command]!.removeValue(forKey: listenerKey.key)
     }
+
+    
 }
 
 extension Message {

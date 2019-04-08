@@ -16,8 +16,6 @@ class JoinGameViewController: CaptureTheFlagViewController{
     @IBOutlet weak var success: UITextView!
     @IBOutlet weak var gameKeyText: UITextField!
     @IBOutlet weak var usernameText: UITextField!
-    var id = ""
-    var locationManager = CLLocationManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,7 +41,7 @@ class JoinGameViewController: CaptureTheFlagViewController{
                     case 0:
                         self.performSegue(withIdentifier: "fromJoinToLobby", sender: nil)
                     default:
-                        print("HEllo")
+                        print()
                     }
                 }
             })
