@@ -335,8 +335,6 @@ class MapFlagPlacementViewController: CaptureTheFlagViewController, UIGestureRec
                 self.boundary = boundary
                 let gameBounds = MKCircle(center: boundary.location, radius: 4000)
                 let polyline = self.createPolyLine(boundary: boundary)
-                print("This is the polyline")
-                print(polyline?.coordinate)
                 self.map.add(gameBounds)
                 self.map.add(polyline!)
             }))!),
@@ -391,7 +389,6 @@ class MapFlagPlacementViewController: CaptureTheFlagViewController, UIGestureRec
             let coord1 = CLLocationCoordinate2D(latitude: latitudeBottom, longitude: longitude)
             let coord2 = CLLocationCoordinate2D(latitude: latitudeTop, longitude: longitude)
             let coords = [coord1, coord2]
-            print("It should be returning an mkpolyline")
             return MKPolyline(coordinates: coords, count: coords.count)
         }
         //Add horizontal later
@@ -408,7 +405,6 @@ class MapFlagPlacementViewController: CaptureTheFlagViewController, UIGestureRec
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        print("MAP VIEW CONTROLLER IS PREPARING FOR THE SEQUE")
         if let nextViewController = segue.destination as? GameOverViewController {
             nextViewController.winningTeam = self.winningTeam
         }

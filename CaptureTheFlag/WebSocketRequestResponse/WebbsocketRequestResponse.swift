@@ -37,8 +37,6 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
         }
         
         socket?.event.message = {msg in
-            print("Here is the message")
-            print(msg)
             if (type(of: msg) == type(of: [UInt8]())) {
                 let incomingData = Data(msg as! [UInt8])
                 let rawJSON = try! JSONSerialization.jsonObject(with: incomingData, options: []) as! [String: Any]
@@ -123,11 +121,8 @@ public class WebSocketRequestResponse: AsyncRequestResponse {
             listener(message)
             self.responseListeners.removeValue(forKey: UUID(uuidString: message.key!)!)
         } else {
-            print("INCOMING MESSSAGE WORKING")
             if self.listeners[message.command!] != nil {
-                print("at least the command is not nil")
                 for listener in (self.listeners[(message.command)!]?.values)! {
-                    print("LOOPING THROUGH LISTENERS")
                     listener(message)
                 }
             }

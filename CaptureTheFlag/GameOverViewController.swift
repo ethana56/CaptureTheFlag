@@ -5,7 +5,6 @@ class GameOverViewController: UIViewController {
     
     @IBOutlet weak var winningTeamText: UILabel!
     override func viewDidLoad() {
-        print("Calling VIEW DIDID LOAD")
         super.viewDidLoad()
         self.navigationItem.hidesBackButton = true
         self.winningTeamText.text = self.winningTeam?.name

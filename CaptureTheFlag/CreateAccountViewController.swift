@@ -16,8 +16,6 @@ class CreateAccountViewController: CaptureTheFlagViewController {
     }
     
     @IBAction func createAccount(_ sender: Any) {
-        print("create account button is being pressed")
-        print("\(passwordInput.text!) \(usernameInput.text!)")
         if usernameInput.text != nil && passwordInput.text != nil {
             print("its getting this far")
             self.serverAccess?.createAccount(username: usernameInput.text!, password: passwordInput.text!, callback: {(error) in

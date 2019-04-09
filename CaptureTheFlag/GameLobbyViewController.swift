@@ -95,7 +95,6 @@ class GameLobbyViewController: CaptureTheFlagViewController, UITableViewDelegate
         
         self.listenerKeys.append(
             self.serverAccess!.addGameStateChangedListener(callback: {(gameState) in
-                print("lobby the game state changed")
                 if gameState == 1 {
                     self.removeListeners()
                     self.performSegue(withIdentifier: "toMapView", sender: nil)

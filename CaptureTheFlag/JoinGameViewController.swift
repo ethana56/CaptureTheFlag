@@ -25,7 +25,6 @@ class JoinGameViewController: CaptureTheFlagViewController{
             self.handleError(error: error!)
         } else {
             self.serverAccess!.getGameState(callback: {[unowned self](state, error) in
-                print("STATE: \(state)")
                 if error != nil {
                     
                 } else {

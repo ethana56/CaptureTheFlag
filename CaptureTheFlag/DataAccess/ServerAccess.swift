@@ -54,7 +54,6 @@ final class ServerAccess {
                     let json = try JSONSerialization.jsonObject(with: data, options: []) as! [String : String]
                     self.userKey = json["key"]
                     self.point.close(closed: {() in
-                        print("THIS SHOULD COME BEFORE")
                         self.point.open(address: "ws://localhost:8000/", additionalHTTPHeaders: ["authKey" : self.userKey!])
                         DispatchQueue.main.async {
                             callback(nil)
@@ -64,16 +63,12 @@ final class ServerAccess {
                     print(error)
                 }
             }
-            print("SOMETHING SOMETHING AN SOMETHIN ESLE")
         }.resume()
     }
     
     
     //172.116.137.45
     func createAccount(username: String, password: String, callback: @escaping (GameError?) -> ()) {
-        print(username)
-        print(password)
-        print("create account is getting called")
         var request = URLRequest(url: URL(string: "http:localhost:8000/createAccount")!)
         request.httpMethod = "POST"
         request.setValue("Application/json", forHTTPHeaderField: "Content-Type")
@@ -89,7 +84,8 @@ final class ServerAccess {
                     callback(nil)
                 }
             } else {
-                print("I think it failed")
+                /*TODO: handle this error*/
+                print("Fail")
             }
         }.resume()
     }
@@ -102,7 +98,7 @@ final class ServerAccess {
                     let team = self.constructTeam(teamJson: dataAsDict, players: [Player](), flags: [Flag]())
                     callback(team)
                 } catch {
-                    print("THIS IS WHERE THE ERROR IS ORCCURING")
+                    /*Handle this error*/
                     print(error)
                 }
             
@@ -175,7 +171,6 @@ final class ServerAccess {
             let player = self.registeredPlayers[playerId]
             let team = self.registeredTeams[teamId]
             if player != nil && team != nil {
-                print("AND IT EVEN GOT HERE")
                 team!.add(player: player!)
             }
         })
@@ -309,8 +304,6 @@ final class ServerAccess {
             let location = Location(latitude: centerDict["latitude"]!, longitude: centerDict["longitude"]!)
             let teamSides = boundaryDict["teamSides"] as! [String:String]
             let gameBoundary = GameBoundary(location: location, direction: BoundaryDirection(rawValue: boundaryDict["direction"] as! String)!, teamSides: teamSides)
-            print("from boundary listener")
-            print(gameBoundary.teamSides)
             callback(gameBoundary)
         })
         return GameListenerKey(key: listenerKey.key)
@@ -327,7 +320,6 @@ final class ServerAccess {
     
     func addPlayerAddedListener(callback: @escaping (Player) -> ()) -> GameListenerKey {
         let listenerKey = self.point.addListener(for: "playerAdded", callback: {(data) in
-            print("player being added")
             let rawData = data as! JSON
             let player = self.constructPlayer(playerJson: rawData)
             self.register(player: player)
@@ -351,7 +343,6 @@ final class ServerAccess {
     
     func addGameStateChangedListener(callback: @escaping (Int) -> ()) -> GameListenerKey {
         let listenerKey = self.point.addListener(for: "gameStateChanged", callback: {(data) in
-            print("THE GAME STATE IS CHANGING")
             let dataAsDict = data as! [String:Int]
             callback(dataAsDict["gameState"]!)
         })
@@ -406,7 +397,6 @@ final class ServerAccess {
     
     
     func createGame(key: String, gameName: String, callback: @escaping (GameError?) -> ()) {
-        print("create game is being called hell yes")
         let dataToSend = [
             "key" : key,
             "gameName" : gameName
@@ -490,9 +480,7 @@ final class ServerAccess {
     }
     
     func getGameState(callback: @escaping (Int?, GameError?) -> ()) {
-        //print("GET GAME STATE IS BEING CALLED")
         self.point.sendMessage(command: "getGameState", payLoad: nil, callback: {(data, error) in
-            //print("THIS CALLBACK IS BEING CALLED")
             if error != nil  {
                 print(error!.description)
                 callback(nil, GameError.serverError)
