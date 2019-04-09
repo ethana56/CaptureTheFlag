@@ -1,4 +1,3 @@
-//Copyright © 2018 Ethan Abrams. All rights reserved.
 import Foundation
 import SwiftWebSocket
 public class WebSocketRequestResponse: AsyncRequestResponse {

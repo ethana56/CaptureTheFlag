@@ -71,9 +71,9 @@ class Team: CustomStringConvertible, Hashable, Equatable {
     public func removeObserver(key: GameObserverDeletionKey) -> Bool {
         switch key.observerType {
         case TeamObserverType.playerAdded:
-            return self.playerAddedRemovedObservers.removeValue(forKey: key) != nil ? true : false
+            return self.playerAddedRemovedObservers.removeValue(forKey: key) != nil
         case TeamObserverType.flagAdded:
-            return self.flagAddedRemovedObservers.removeValue(forKey: key) != nil ? true : false
+            return self.flagAddedRemovedObservers.removeValue(forKey: key) != nil
         default:
             return false
         }

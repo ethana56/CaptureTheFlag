@@ -1,6 +1,6 @@
 import Foundation
 
-
+typealias ObserverType = String
 struct GameObserverDeletionKey: Hashable, Equatable {
     let key = UUID()
     let observerType: ObserverType
@@ -8,7 +8,7 @@ struct GameObserverDeletionKey: Hashable, Equatable {
         self.observerType = observerType
     }
 }
-typealias ObserverType = String
+
 
 
 

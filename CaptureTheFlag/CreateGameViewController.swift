@@ -1,11 +1,3 @@
-//
-//  CreateGameViewController.swift
-//  CaptureTheFlag
-//
-//  Created by Ethan Abrams on 6/2/18.
-//  Copyright © 2018 Joe Durand. All rights reserved.
-//
-
 import UIKit
 
 class CreateGameViewController: CaptureTheFlagViewController {

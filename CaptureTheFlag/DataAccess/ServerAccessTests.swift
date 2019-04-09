@@ -1,10 +1,3 @@
-//
-//  ServerAccessTests.swift
-//  CaptureTheFlagTests
-//
-//  Created by Ethan Abrams on 1/23/19.
-//  Copyright © 2019 Joe Durand. All rights reserved.
-//
 
 import XCTest
 @testable import CaptureTheFlag

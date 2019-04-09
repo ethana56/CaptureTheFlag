@@ -1,11 +1,11 @@
 import CoreLocation
 
 class Flag: Equatable, Moveable, Hashable {
-    var location: Location?
-    var id: String
-    var name: String? = nil
-    weak var heldBy: Player?
-    weak var team: Team?
+    public var location: Location?
+    public var id: String
+    public var name: String? = nil
+    weak public var heldBy: Player?
+    weak public var team: Team?
     private var heldObservers = [GameObserverDeletionKey : (Bool, Player) -> ()]()
     private var locationObservers = [GameObserverDeletionKey : (Location) -> ()]()
     

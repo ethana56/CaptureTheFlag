@@ -1,10 +1,3 @@
-//
-//  CreateAccountViewController.swift
-//  
-//
-//  Created by Ethan Abrams on 9/17/18.
-//
-
 import UIKit
 
 class CreateAccountViewController: CaptureTheFlagViewController {

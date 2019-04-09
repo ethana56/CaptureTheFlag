@@ -1,11 +1,3 @@
-//
-//  JoinGameViewController.swift
-//  CaptureTheFlag
-//
-//  Created by Carlos Garcia jr on 3/13/18.
-//  Copyright © 2018 Joe Durand. All rights reserved.
-//
-
 import UIKit
 import SwiftWebSocket
 import CoreLocation
