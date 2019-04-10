@@ -20,7 +20,6 @@
 		6E2EC7BB1DECA937F9326FB1 /* Pods_CaptureTheFlag.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 158392B9CBDEA7DAD8DEC41C /* Pods_CaptureTheFlag.framework */; };
 		AB0429BE20A6DA05003D1BD0 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0429BD20A6DA05003D1BD0 /* Message.swift */; };
 		AB2D3CAD20A63E5B00A2703B /* WebbsocketRequestResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB2D3CAC20A63E5B00A2703B /* WebbsocketRequestResponse.swift */; };
-		AB54F4E52106E7FA00D6737C /* ServerErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB54F4E42106E7FA00D6737C /* ServerErrorViewController.swift */; };
 		AB63600D2111622000C273E6 /* asyncRequestResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB63600C2111622000C273E6 /* asyncRequestResponse.swift */; };
 		AB6E607D20D7275C000186CC /* ServerPointErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6E607C20D7275C000186CC /* ServerPointErrors.swift */; };
 		AB6E607F20D8CFAA000186CC /* PointError.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6E607E20D8CFAA000186CC /* PointError.swift */; };
@@ -64,7 +63,6 @@
 /* Begin PBXFileReference section */
 		158392B9CBDEA7DAD8DEC41C /* Pods_CaptureTheFlag.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CaptureTheFlag.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F9EA6B4F379DCAC5A26CB06 /* Pods_CaptureTheFlagTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CaptureTheFlagTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		45F8E9B9205874CB00E88BC6 /* TeamNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamNameViewController.swift; sourceTree = "<group>"; };
 		45F8E9BB2058766600E88BC6 /* JoinGameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinGameViewController.swift; sourceTree = "<group>"; };
 		45F8E9BD2058788400E88BC6 /* GameLobbyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLobbyViewController.swift; sourceTree = "<group>"; };
 		6BEC9A7520360BCC003A1296 /* CaptureTheFlag.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CaptureTheFlag.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -82,7 +80,6 @@
 		90C24D81E3E6DFC7EEDF31FC /* Pods-CaptureTheFlagTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CaptureTheFlagTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-CaptureTheFlagTests/Pods-CaptureTheFlagTests.release.xcconfig"; sourceTree = "<group>"; };
 		AB0429BD20A6DA05003D1BD0 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		AB2D3CAC20A63E5B00A2703B /* WebbsocketRequestResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebbsocketRequestResponse.swift; sourceTree = "<group>"; };
-		AB54F4E42106E7FA00D6737C /* ServerErrorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerErrorViewController.swift; sourceTree = "<group>"; };
 		AB63600C2111622000C273E6 /* asyncRequestResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = asyncRequestResponse.swift; sourceTree = "<group>"; };
 		AB6E607C20D7275C000186CC /* ServerPointErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerPointErrors.swift; sourceTree = "<group>"; };
 		AB6E607E20D8CFAA000186CC /* PointError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointError.swift; sourceTree = "<group>"; };
@@ -184,7 +181,6 @@
 				F4E3BED2220E21F600BAD802 /* Views */,
 				F40C6A53221F7F8D00FC3B50 /* MapAnnotations */,
 				AB84CFB72055BEA300B84764 /* CaptureTheFlagViewController.swift */,
-				AB54F4E42106E7FA00D6737C /* ServerErrorViewController.swift */,
 				45F8E9BD2058788400E88BC6 /* GameLobbyViewController.swift */,
 				F4A0ED65219CB23F00FA5716 /* LoginViewController.swift */,
 				ABA9ECEF20C47EF600873A22 /* GameLobbyCell.swift */,
@@ -193,7 +189,6 @@
 				45F8E9BB2058766600E88BC6 /* JoinGameViewController.swift */,
 				ABDB395220CBB86E00D59923 /* FirstViewController.swift */,
 				ABE421B320C368BC006C5166 /* CreateGameViewController.swift */,
-				45F8E9B9205874CB00E88BC6 /* TeamNameViewController.swift */,
 				6BEC9A7C20360BCC003A1296 /* Main.storyboard */,
 				ABD1B2F8207C67B000EC5D01 /* Storyboard.storyboard */,
 				6BEC9A7F20360BCC003A1296 /* Assets.xcassets */,
@@ -442,7 +437,6 @@
 				45F8E9BC2058766600E88BC6 /* JoinGameViewController.swift in Sources */,
 				6BEC9AA020360C60003A1296 /* Team.swift in Sources */,
 				F430E9DF21647D0C0092F26F /* GameBoundary.swift in Sources */,
-				AB54F4E52106E7FA00D6737C /* ServerErrorViewController.swift in Sources */,
 				AB782AFE20AEAE1F00B82F8D /* ListenerKey.swift in Sources */,
 				AB2D3CAD20A63E5B00A2703B /* WebbsocketRequestResponse.swift in Sources */,
 				45F8E9BE2058788400E88BC6 /* GameLobbyViewController.swift in Sources */,
