@@ -12,7 +12,7 @@ class GameLobbyViewController: CaptureTheFlagViewController, UITableViewDelegate
     var teamSelected: Team?
     
     override func viewDidLoad() {
-        super.vi ewDidLoad()
+        super.viewDidLoad()
         self.tableView.delegate = self
         self.tableView.dataSource = self
         self.serverAccess!.getPlayerTeamsFlags(callback: {(players, flags, teams, error) in

@@ -49,6 +49,7 @@
 		F4E8CC7D225D7AB30026F508 /* GameObserverDeletionKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E8CC71225D7AB30026F508 /* GameObserverDeletionKey.swift */; };
 		F4E8CC7E225D7AB30026F508 /* Flag.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E8CC72225D7AB30026F508 /* Flag.swift */; };
 		F4E8CC7F225D7AB30026F508 /* GameError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E8CC73225D7AB30026F508 /* GameError.swift */; };
+		F4E8CC81225D7C180026F508 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4E8CC80225D7C180026F508 /* XCTest.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -112,6 +113,7 @@
 		F4E8CC71225D7AB30026F508 /* GameObserverDeletionKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameObserverDeletionKey.swift; sourceTree = "<group>"; };
 		F4E8CC72225D7AB30026F508 /* Flag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Flag.swift; sourceTree = "<group>"; };
 		F4E8CC73225D7AB30026F508 /* GameError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameError.swift; sourceTree = "<group>"; };
+		F4E8CC80225D7C180026F508 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +121,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4E8CC81225D7C180026F508 /* XCTest.framework in Frameworks */,
 				6E2EC7BB1DECA937F9326FB1 /* Pods_CaptureTheFlag.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -148,6 +151,7 @@
 		653F0FDB4BF37AE749621B1F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F4E8CC80225D7C180026F508 /* XCTest.framework */,
 				158392B9CBDEA7DAD8DEC41C /* Pods_CaptureTheFlag.framework */,
 				2F9EA6B4F379DCAC5A26CB06 /* Pods_CaptureTheFlagTests.framework */,
 			);
@@ -177,26 +181,17 @@
 		6BEC9A7720360BCC003A1296 /* CaptureTheFlag */ = {
 			isa = PBXGroup;
 			children = (
+				F4E8CC82225D7C7B0026F508 /* ViewControllers */,
 				F4E8CC67225D7AB30026F508 /* DataAccess */,
 				AB4865C220BA1F3E00C3A51A /* WebSocketRequestResponse */,
-				6BEC9A7820360BCC003A1296 /* AppDelegate.swift */,
 				F4E3BED2220E21F600BAD802 /* Views */,
 				F40C6A53221F7F8D00FC3B50 /* MapAnnotations */,
-				AB84CFB72055BEA300B84764 /* CaptureTheFlagViewController.swift */,
-				45F8E9BD2058788400E88BC6 /* GameLobbyViewController.swift */,
-				F4A0ED65219CB23F00FA5716 /* LoginViewController.swift */,
-				ABA9ECEF20C47EF600873A22 /* GameLobbyCell.swift */,
-				ABF8B4E820BA37D700F72D41 /* MapFlagPlacementViewController.swift */,
-				F465040021507F2B004A6078 /* CreateAccountViewController.swift */,
-				45F8E9BB2058766600E88BC6 /* JoinGameViewController.swift */,
-				ABDB395220CBB86E00D59923 /* FirstViewController.swift */,
-				ABE421B320C368BC006C5166 /* CreateGameViewController.swift */,
 				6BEC9A7C20360BCC003A1296 /* Main.storyboard */,
 				ABD1B2F8207C67B000EC5D01 /* Storyboard.storyboard */,
 				6BEC9A7F20360BCC003A1296 /* Assets.xcassets */,
 				6BEC9A8120360BCC003A1296 /* LaunchScreen.storyboard */,
 				6BEC9A8420360BCC003A1296 /* Info.plist */,
-				F444C950223A218B00FF17F3 /* GameOverViewController.swift */,
+				6BEC9A7820360BCC003A1296 /* AppDelegate.swift */,
 			);
 			path = CaptureTheFlag;
 			sourceTree = "<group>";
@@ -260,6 +255,23 @@
 				F4E8CC73225D7AB30026F508 /* GameError.swift */,
 			);
 			path = DataAccess;
+			sourceTree = "<group>";
+		};
+		F4E8CC82225D7C7B0026F508 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				AB84CFB72055BEA300B84764 /* CaptureTheFlagViewController.swift */,
+				45F8E9BD2058788400E88BC6 /* GameLobbyViewController.swift */,
+				F4A0ED65219CB23F00FA5716 /* LoginViewController.swift */,
+				ABA9ECEF20C47EF600873A22 /* GameLobbyCell.swift */,
+				ABF8B4E820BA37D700F72D41 /* MapFlagPlacementViewController.swift */,
+				F465040021507F2B004A6078 /* CreateAccountViewController.swift */,
+				45F8E9BB2058766600E88BC6 /* JoinGameViewController.swift */,
+				ABDB395220CBB86E00D59923 /* FirstViewController.swift */,
+				ABE421B320C368BC006C5166 /* CreateGameViewController.swift */,
+				F444C950223A218B00FF17F3 /* GameOverViewController.swift */,
+			);
+			path = ViewControllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
