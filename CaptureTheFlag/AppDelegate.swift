@@ -1,20 +1,4 @@
 
-//
-
-//  AppDelegate.swift
-
-//  CaptureTheFlag
-
-//
-
-//  Created by Joe Durand on 2/15/18.
-
-//  Copyright © 2018 Joe Durand. All rights reserved.
-
-//
-
-
-
 import UIKit
 
 

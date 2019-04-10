@@ -1,10 +1,3 @@
-//
-//  asyncRequestResponse.swift
-//  CaptureTheFlag
-//
-//  Created by Ethan Abrams on 7/31/18.
-//  Copyright © 2018 Joe Durand. All rights reserved.
-//
 
 import Foundation
 public struct ARRError {

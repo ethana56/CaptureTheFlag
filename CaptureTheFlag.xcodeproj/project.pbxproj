@@ -276,7 +276,6 @@
 				6BEC9A7220360BCC003A1296 /* Frameworks */,
 				6BEC9A7320360BCC003A1296 /* Resources */,
 				E37D9D88E66BE7F2D7346A8A /* [CP] Embed Pods Frameworks */,
-				A07B37E3B3909491FB8D8B95 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -295,8 +294,6 @@
 				6BEC9A8520360BCC003A1296 /* Sources */,
 				6BEC9A8620360BCC003A1296 /* Frameworks */,
 				6BEC9A8720360BCC003A1296 /* Resources */,
-				28B237D28FDE7899A4C369EB /* [CP] Embed Pods Frameworks */,
-				F3DB5779F68A79E8342E2F6D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -376,39 +373,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		28B237D28FDE7899A4C369EB /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CaptureTheFlagTests/Pods-CaptureTheFlagTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A07B37E3B3909491FB8D8B95 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-CaptureTheFlag/Pods-CaptureTheFlag-resources.sh",
-				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CaptureTheFlag/Pods-CaptureTheFlag-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		A8CA37A99762CE4D752907F0 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -433,41 +397,16 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-CaptureTheFlag/Pods-CaptureTheFlag-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/GTMOAuth2/GTMOAuth2.framework",
-				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
-				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
+				"${PODS_ROOT}/Target Support Files/Pods-CaptureTheFlag/Pods-CaptureTheFlag-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/SwiftWebSocket/SwiftWebSocket.framework",
-				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
-				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMOAuth2.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftWebSocket.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CaptureTheFlag/Pods-CaptureTheFlag-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F3DB5779F68A79E8342E2F6D /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CaptureTheFlagTests/Pods-CaptureTheFlagTests-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-CaptureTheFlag/Pods-CaptureTheFlag-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F952A6B7B259EEABCD25D5BB /* [CP] Check Pods Manifest.lock */ = {
