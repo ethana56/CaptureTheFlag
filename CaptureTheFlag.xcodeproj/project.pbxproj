@@ -13,7 +13,6 @@
 		6BEC9A7E20360BCC003A1296 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6BEC9A7C20360BCC003A1296 /* Main.storyboard */; };
 		6BEC9A8020360BCC003A1296 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6BEC9A7F20360BCC003A1296 /* Assets.xcassets */; };
 		6BEC9A8320360BCC003A1296 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6BEC9A8120360BCC003A1296 /* LaunchScreen.storyboard */; };
-		6BEC9A8E20360BCC003A1296 /* CaptureTheFlagTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEC9A8D20360BCC003A1296 /* CaptureTheFlagTests.swift */; };
 		6E2EC7BB1DECA937F9326FB1 /* Pods_CaptureTheFlag.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 158392B9CBDEA7DAD8DEC41C /* Pods_CaptureTheFlag.framework */; };
 		AB0429BE20A6DA05003D1BD0 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0429BD20A6DA05003D1BD0 /* Message.swift */; };
 		AB2D3CAD20A63E5B00A2703B /* WebbsocketRequestResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB2D3CAC20A63E5B00A2703B /* WebbsocketRequestResponse.swift */; };
@@ -37,11 +36,9 @@
 		F4D06A012222016500012DB9 /* PlayerAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D06A002222016500012DB9 /* PlayerAnnotation.swift */; };
 		F4D06A0322220AB800012DB9 /* FlagAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D06A0222220AB800012DB9 /* FlagAnnotation.swift */; };
 		F4E3BED4220E221900BAD802 /* PlayerAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E3BED3220E221900BAD802 /* PlayerAnnotationView.swift */; };
-		F4E8CC74225D7AB30026F508 /* TwoWayNSMapTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E8CC68225D7AB30026F508 /* TwoWayNSMapTable.swift */; };
 		F4E8CC75225D7AB30026F508 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E8CC69225D7AB30026F508 /* Location.swift */; };
 		F4E8CC76225D7AB30026F508 /* Moveable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E8CC6A225D7AB30026F508 /* Moveable.swift */; };
 		F4E8CC77225D7AB30026F508 /* ServerAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E8CC6B225D7AB30026F508 /* ServerAccess.swift */; };
-		F4E8CC78225D7AB30026F508 /* ServerAccessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E8CC6C225D7AB30026F508 /* ServerAccessTests.swift */; };
 		F4E8CC79225D7AB30026F508 /* BoundaryDirection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E8CC6D225D7AB30026F508 /* BoundaryDirection.swift */; };
 		F4E8CC7A225D7AB30026F508 /* Team.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E8CC6E225D7AB30026F508 /* Team.swift */; };
 		F4E8CC7B225D7AB30026F508 /* GameBoundary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E8CC6F225D7AB30026F508 /* GameBoundary.swift */; };
@@ -49,7 +46,6 @@
 		F4E8CC7D225D7AB30026F508 /* GameObserverDeletionKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E8CC71225D7AB30026F508 /* GameObserverDeletionKey.swift */; };
 		F4E8CC7E225D7AB30026F508 /* Flag.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E8CC72225D7AB30026F508 /* Flag.swift */; };
 		F4E8CC7F225D7AB30026F508 /* GameError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E8CC73225D7AB30026F508 /* GameError.swift */; };
-		F4E8CC81225D7C180026F508 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4E8CC80225D7C180026F508 /* XCTest.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,8 +70,6 @@
 		6BEC9A8220360BCC003A1296 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6BEC9A8420360BCC003A1296 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6BEC9A8920360BCC003A1296 /* CaptureTheFlagTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CaptureTheFlagTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		6BEC9A8D20360BCC003A1296 /* CaptureTheFlagTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureTheFlagTests.swift; sourceTree = "<group>"; };
-		6BEC9A8F20360BCC003A1296 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		90C24D81E3E6DFC7EEDF31FC /* Pods-CaptureTheFlagTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CaptureTheFlagTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-CaptureTheFlagTests/Pods-CaptureTheFlagTests.release.xcconfig"; sourceTree = "<group>"; };
 		AB0429BD20A6DA05003D1BD0 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		AB2D3CAC20A63E5B00A2703B /* WebbsocketRequestResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebbsocketRequestResponse.swift; sourceTree = "<group>"; };
@@ -101,11 +95,9 @@
 		F4D06A002222016500012DB9 /* PlayerAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerAnnotation.swift; sourceTree = "<group>"; };
 		F4D06A0222220AB800012DB9 /* FlagAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlagAnnotation.swift; sourceTree = "<group>"; };
 		F4E3BED3220E221900BAD802 /* PlayerAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerAnnotationView.swift; sourceTree = "<group>"; };
-		F4E8CC68225D7AB30026F508 /* TwoWayNSMapTable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwoWayNSMapTable.swift; sourceTree = "<group>"; };
 		F4E8CC69225D7AB30026F508 /* Location.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		F4E8CC6A225D7AB30026F508 /* Moveable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Moveable.swift; sourceTree = "<group>"; };
 		F4E8CC6B225D7AB30026F508 /* ServerAccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerAccess.swift; sourceTree = "<group>"; };
-		F4E8CC6C225D7AB30026F508 /* ServerAccessTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerAccessTests.swift; sourceTree = "<group>"; };
 		F4E8CC6D225D7AB30026F508 /* BoundaryDirection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoundaryDirection.swift; sourceTree = "<group>"; };
 		F4E8CC6E225D7AB30026F508 /* Team.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Team.swift; sourceTree = "<group>"; };
 		F4E8CC6F225D7AB30026F508 /* GameBoundary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoundary.swift; sourceTree = "<group>"; };
@@ -121,7 +113,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F4E8CC81225D7C180026F508 /* XCTest.framework in Frameworks */,
 				6E2EC7BB1DECA937F9326FB1 /* Pods_CaptureTheFlag.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -162,7 +153,6 @@
 			isa = PBXGroup;
 			children = (
 				6BEC9A7720360BCC003A1296 /* CaptureTheFlag */,
-				6BEC9A8C20360BCC003A1296 /* CaptureTheFlagTests */,
 				6BEC9A7620360BCC003A1296 /* Products */,
 				36C70F1FBA97033B2FE5E2D9 /* Pods */,
 				653F0FDB4BF37AE749621B1F /* Frameworks */,
@@ -194,15 +184,6 @@
 				6BEC9A7820360BCC003A1296 /* AppDelegate.swift */,
 			);
 			path = CaptureTheFlag;
-			sourceTree = "<group>";
-		};
-		6BEC9A8C20360BCC003A1296 /* CaptureTheFlagTests */ = {
-			isa = PBXGroup;
-			children = (
-				6BEC9A8D20360BCC003A1296 /* CaptureTheFlagTests.swift */,
-				6BEC9A8F20360BCC003A1296 /* Info.plist */,
-			);
-			path = CaptureTheFlagTests;
 			sourceTree = "<group>";
 		};
 		AB4865C220BA1F3E00C3A51A /* WebSocketRequestResponse */ = {
@@ -241,11 +222,9 @@
 		F4E8CC67225D7AB30026F508 /* DataAccess */ = {
 			isa = PBXGroup;
 			children = (
-				F4E8CC68225D7AB30026F508 /* TwoWayNSMapTable.swift */,
 				F4E8CC69225D7AB30026F508 /* Location.swift */,
 				F4E8CC6A225D7AB30026F508 /* Moveable.swift */,
 				F4E8CC6B225D7AB30026F508 /* ServerAccess.swift */,
-				F4E8CC6C225D7AB30026F508 /* ServerAccessTests.swift */,
 				F4E8CC6D225D7AB30026F508 /* BoundaryDirection.swift */,
 				F4E8CC6E225D7AB30026F508 /* Team.swift */,
 				F4E8CC6F225D7AB30026F508 /* GameBoundary.swift */,
@@ -458,9 +437,7 @@
 				F4E8CC7E225D7AB30026F508 /* Flag.swift in Sources */,
 				F4D06A012222016500012DB9 /* PlayerAnnotation.swift in Sources */,
 				AB0429BE20A6DA05003D1BD0 /* Message.swift in Sources */,
-				F4E8CC74225D7AB30026F508 /* TwoWayNSMapTable.swift in Sources */,
 				F4A0ED66219CB23F00FA5716 /* LoginViewController.swift in Sources */,
-				F4E8CC78225D7AB30026F508 /* ServerAccessTests.swift in Sources */,
 				F4E8CC7D225D7AB30026F508 /* GameObserverDeletionKey.swift in Sources */,
 				AB6E607F20D8CFAA000186CC /* PointError.swift in Sources */,
 				ABDB395320CBB86E00D59923 /* FirstViewController.swift in Sources */,
@@ -486,7 +463,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6BEC9A8E20360BCC003A1296 /* CaptureTheFlagTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

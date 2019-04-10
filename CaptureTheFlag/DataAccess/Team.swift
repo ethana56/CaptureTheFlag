@@ -92,5 +92,3 @@ struct TeamObserverType {
     static let playerAdded = "playerAdded"
     static let flagAdded = "flagAdded"
 }
-
-
